@@ -52,6 +52,12 @@ INSTALL(FILES
   )
 
 INSTALL(FILES
+  srdf/t-less/obj_01.srdf
+  DESTINATION
+  ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/srdf/t-less
+  )
+
+INSTALL(FILES
   config/calibrated-params.yaml
   DESTINATION
   ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/config
@@ -67,6 +73,11 @@ INSTALL(FILES
 INSTALL(FILES
   meshes/camera-support.stl
   DESTINATION
+  ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/meshes
+  )
+
+INSTALL(DIRECTORY
+  meshes/t-less DESTINATION
   ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/meshes
   )
 
