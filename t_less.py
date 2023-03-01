@@ -65,5 +65,5 @@ class TLess:
         with open(filename) as f:
             srdfString=f.read()
         urdfString = self.template.format(name = name, obj_id = obj_id)
-        vf.loadRobotModelFromString(f"obj_{obj_id}", "freeflyer", urdfString,
+        vf.loadRobotModelFromString(name, "freeflyer", urdfString,
                                     srdfString)

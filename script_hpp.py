@@ -32,11 +32,9 @@ from hpp.corbaserver.manipulation import Robot, \
 from hpp.gepetto.manipulation import ViewerFactory
 from agimus_demos.tools_hpp import RosInterface
 from hpp.corbaserver import wrap_delete
-
-class Box:
-    urdfFilename = "package://agimus_demos/franka/manipulation/urdf/small_box.urdf"
-    srdfFilename = "package://agimus_demos/franka/manipulation/srdf/small_box.srdf"
-    rootJointType = "freeflyer"
+from create_graph import Factory
+from t_less import TLess
+from bin_picking import BinPicking
 
 connectedToRos = False
 try:
@@ -48,7 +46,8 @@ except:
     print("reading generic URDF")
     from hpp.rostools import process_xacro, retrieve_resource
     Robot.urdfString = process_xacro\
-      ("package://agimus_demos/franka/manipulation/urdf/demo.urdf.xacro")
+      ("package://agimus_demos/franka/manipulation/urdf/demo.urdf.xacro",
+       "calibration:=false")
 Robot.srdfString = ""
 
 defaultContext = "corbaserver"
@@ -69,57 +68,17 @@ ps.setParameter('SimpleTimeParameterization/safety', 0.95)
 ps.selectPathProjector ("Progressive", .05)
 ps.selectPathValidation("Graph-Progressive", 0.01)
 vf = ViewerFactory(ps)
-vf.loadRobotModel (Box, "box")
-robot.setJointBounds('box/root_joint', [-1., 1., -1., 1., -0.8, 1.5])
+obj_01 = TLess(vf, name="obj_01", obj_id="01")
+robot.setJointBounds('obj_01/root_joint', [-1., 1., -1., 1., -0.8, 1.5])
 print("Part loaded")
 
 robot.client.manipulation.robot.insertRobotSRDFModel\
     ("pandas", "package://agimus_demos/franka/manipulation/srdf/demo.srdf")
 
-q0 = [0, -pi/4, 0, -3*pi/4, 0, pi/2, pi/4, 0.001, 0.001, -0.15, 0.2, 0.87, 0, sqrt(2)/2, 0, sqrt(2)/2]
-
-r = robot.rankInConfiguration['box/root_joint']
-q0[r+2] = 0.86
-q0[r+3:r+7] = [0, sqrt(2)/2, 0, sqrt(2)/2]
-
-if connectedToRos:
-    ri = RosInterface(robot)
-    q = ri.getCurrentConfig(q0)
-else:
-    q = q0[:]
-
-handles = ps.getAvailable('handle')
-grippers = ps.getAvailable('gripper')
-boxContactSurfaces = list(filter(lambda s:s.startswith('box/'),
-                                 ps.getAvailable('RobotContact')))
-envContactSurfaces = list(filter(lambda s:s.startswith('pandas/'),
-                                 ps.getAvailable('RobotContact')))
 graph = ConstraintGraph(robot, 'graph')
-factory = ConstraintGraphFactory(graph)
-factory.setGrippers(grippers)
-factory.setObjects(["box",], [handles], [boxContactSurfaces])
-factory.environmentContacts(envContactSurfaces)
-factory.generate()
-SecurityMargins.separators.append('_')
-sm = SecurityMargins(ps, factory, ["pandas/panda2", "box"])
-sm.setSecurityMarginBetween("pandas/panda2", "box", 0.03)
-sm.setSecurityMarginBetween("pandas/panda2", "pandas/panda2", 0)
-sm.defaultMargin = 0.05
-sm.apply()
-## deactivate collision between gripper and contact surfaces on transition that
-#  go to or come from contact.
-edges = ['pandas/panda2_gripper > box/handle | f_12',
-         'pandas/panda2_gripper < box/handle | 0-0_21',
-         'pandas/panda2_gripper > box/handle | f_23',
-         'pandas/panda2_gripper < box/handle | 0-0_32',
-         'pandas/panda2_gripper > box/handle2 | f_12',
-         'pandas/panda2_gripper < box/handle2 | 0-1_21',
-         'pandas/panda2_gripper > box/handle2 | f_23',
-         'pandas/panda2_gripper < box/handle2 | 0-1_32',]
-joints = sm.gripperToJoints['pandas/panda2_gripper']
-for edge in edges:
-    for j in joints:
-        graph.setSecurityMarginForEdge(edge, 'universe', j, 0)
+factory = Factory(ps, graph, "obj_01")
+factory.addGrasp('pandas/panda2_gripper', 'obj_01/lateral', 0, 0)
+factory.addGrasp('pandas/panda2_gripper', 'obj_01/top', 0, 1)
 # Lock gripper in open position.
 ps.createLockedJoint('locked_finger_1', 'pandas/panda2_finger_joint1', [0.035])
 ps.createLockedJoint('locked_finger_2', 'pandas/panda2_finger_joint2', [0.035])
@@ -128,10 +87,14 @@ graph.addConstraints(graph=True,
                         ['locked_finger_1', 'locked_finger_2']))
 graph.initialize()
 
-res, q_init,err = graph.applyNodeConstraints('free', q)
+q0 = [0, -pi/4, 0, -3*pi/4, 0, pi/2, pi/4, 0.035, 0.035, -0.15, 0.2, 0.87, 0, 0, 0, 1]
 
-q_goal = q_init[:]
-q_goal[r+1] = 0
+if connectedToRos:
+    ri = RosInterface(robot)
+    q = ri.getCurrentConfig(q0)
+else:
+    q = q0[:]
 
-ps.setInitialConfig(q_init)
-ps.addGoalConfig(q_goal)
+bp = BinPicking(ps, graph)
+configs = bp.generatePregrasps(q0, 'pandas/panda2_gripper', 'obj_01/lateral', 5)
+configs += bp.generatePregrasps(q0, 'pandas/panda2_gripper', 'obj_01/top', 5)
