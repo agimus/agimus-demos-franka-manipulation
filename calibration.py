@@ -1,4 +1,4 @@
-# Copyright 2022 CNRS
+# Copyright 2023 CNRS
 # Author: Florent Lamiraux
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,12 +31,17 @@ from hpp.corbaserver.manipulation import Robot, \
     ConstraintGraphFactory, Rule, Constraints, CorbaClient, SecurityMargins
 from hpp.gepetto.manipulation import ViewerFactory
 from agimus_demos.tools_hpp import RosInterface
+from agimus_demos.calibration import HandEyeCalibration as Calibration
 from hpp.corbaserver import wrap_delete
 from create_graph import Factory
 from t_less import TLess
 from bin_picking import BinPicking
 
 connectedToRos = False
+class CalibrationChessboard:
+    urdfFilename = "package://agimus_demos/urdf/chessboard_10x7_27mm.urdf"
+    srdfFilename = ""
+    rootJointType = "freeflyer"
 
 try:
     import rospy
@@ -47,8 +52,7 @@ except:
     print("reading generic URDF")
     from hpp.rostools import process_xacro, retrieve_resource
     Robot.urdfString = process_xacro\
-      ("package://agimus_demos/franka/manipulation/urdf/demo.urdf.xacro",
-       "calibration:=false")
+      ("package://agimus_demos/franka/manipulation/urdf/demo.urdf.xacro")
 Robot.srdfString = ""
 
 defaultContext = "corbaserver"
@@ -69,7 +73,7 @@ ps.setParameter('SimpleTimeParameterization/safety', 0.95)
 ps.selectPathProjector ("Progressive", .05)
 ps.selectPathValidation("Graph-Progressive", 0.01)
 vf = ViewerFactory(ps)
-part = TLess(vf, name="part", obj_id="01")
+vf.loadRobotModel (CalibrationChessboard, "part")
 
 robot.setJointBounds('part/root_joint', [-1., 1., -1., 1., -0.8, 1.5])
 print("Part loaded")
@@ -79,13 +83,24 @@ robot.client.manipulation.robot.insertRobotSRDFModel\
 
 graph = ConstraintGraph(robot, 'graph')
 factory = Factory(ps, graph, "part")
-factory.addGrasp('pandas/panda2_gripper', 'part/lateral', 0, 0)
-factory.addGrasp('pandas/panda2_gripper', 'part/top', 0, 1)
+# Add a state in the constraint graph
+factory.objects = ["part"]
+factory.grippers = list()
+factory.handlesPerObjects = [[]]
+factory.handles = list()
+c = Calibration(ps, graph, factory)
+c.robot_name = "pandas"
+c.camera_frame = "camera_color_optical_frame"
+c.security_distance_robot_universe = 0.05
+c.addStateToConstraintGraph()
 q0 = [0, -pi/4, 0, -3*pi/4, 0, pi/2, pi/4, 0.035, 0.035,
-      -0.15, 0.2, 0.87, 0, 0, 0, 1]
+      0.189, 0, 0.761, 0, 0, 0, 1]
+
 # Lock gripper in open position.
 ps.createLockedJoint('locked_finger_1', 'pandas/panda2_finger_joint1', [0.035])
 ps.createLockedJoint('locked_finger_2', 'pandas/panda2_finger_joint2', [0.035])
+ps.setConstantRightHandSide('locked_finger_1', True)
+ps.setConstantRightHandSide('locked_finger_2', True)
 graph.addConstraints(graph=True,
                      constraints = Constraints(numConstraints =
                         ['locked_finger_1', 'locked_finger_2']))
@@ -98,6 +113,7 @@ if connectedToRos:
 else:
     q = q0[:]
 
-# bp = BinPicking(ps, graph)
-# configs = bp.generatePregrasps(q0, 'pandas/panda2_gripper', 'part/lateral', 5)
-# configs += bp.generatePregrasps(q0, 'pandas/panda2_gripper', 'part/top', 5)
+q_init = ri.getCurrentConfig(q0)
+res, q_init, err = graph.applyNodeConstraints('free', q_init)
+assert res
+c.generateConfigurationsAndPaths(q_init, 30)

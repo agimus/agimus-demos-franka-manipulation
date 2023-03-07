@@ -169,3 +169,6 @@ class Factory(object):
             f"{gripper} < {handle} | {ig}-{ih}"], 0, self.graph.edges[
             f"{gripper} < {handle} | {ig}-{ih}_43"], self.graph.nodes[
             f"{gripper} > {handle} | f_preplace"],)
+
+    def generate(self):
+        pass
