@@ -30,7 +30,7 @@ from dynamic_graph.ros import RosPublish, RosSubscribe
 from agimus_sot.action import Action
 from franka_gripper.msg import GraspActionGoal, MoveActionGoal
 
-Action.maxControlSqrNorm = 20
+Action.maxControlSqrNorm = 40
 
 
 class OpenGripper(object):
