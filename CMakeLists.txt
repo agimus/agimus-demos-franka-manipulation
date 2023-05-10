@@ -35,9 +35,11 @@ INSTALL_DEMO_LAUNCH_FILES(franka manipulation
 INSTALL(FILES
   urdf/small_box.urdf
   urdf/demo.urdf.xacro
+  urdf/franka_arm.xacro
   urdf/franka_hand.xacro
   urdf/franka_robot.xacro
   urdf/support.urdf.xacro
+  urdf/utils.xacro
   DESTINATION
   ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/urdf
   )
