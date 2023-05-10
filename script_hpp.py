@@ -79,10 +79,12 @@ robot.client.manipulation.robot.insertRobotSRDFModel\
 
 graph = ConstraintGraph(robot, 'graph')
 factory = Factory(ps, graph, "part")
-factory.addGrasp('pandas/panda2_gripper', 'part/lateral', 0, 0)
+factory.addGrasp('pandas/panda2_gripper', 'part/lateral_top', 0, 0)
+factory.addGrasp('pandas/panda2_gripper', 'part/lateral_bottom', 0, 0)
 factory.addGrasp('pandas/panda2_gripper', 'part/top', 0, 1)
+factory.addGrasp('pandas/panda2_gripper', 'part/bottom', 0, 1)
 q0 = [0, -pi/4, 0, -3*pi/4, 0, pi/2, pi/4, 0.035, 0.035,
-      -0.15, 0.2, 0.87, 0, 0, 0, 1]
+      0, 0, 1.2, 0, 0, 0, 1]
 # Lock gripper in open position.
 ps.createLockedJoint('locked_finger_1', 'pandas/panda2_finger_joint1', [0.035])
 ps.createLockedJoint('locked_finger_2', 'pandas/panda2_finger_joint2', [0.035])
@@ -98,6 +100,8 @@ if connectedToRos:
 else:
     q = q0[:]
 
-# bp = BinPicking(ps, graph)
-# configs = bp.generatePregrasps(q0, 'pandas/panda2_gripper', 'part/lateral', 5)
-# configs += bp.generatePregrasps(q0, 'pandas/panda2_gripper', 'part/top', 5)
+bp = BinPicking(ps, graph)
+configs = bp.generatePregrasps(q0, 'pandas/panda2_gripper', 'part/lateral_top', 5)
+configs = bp.generatePregrasps(q0, 'pandas/panda2_gripper', 'part/lateral_bottom', 5)
+configs += bp.generatePregrasps(q0, 'pandas/panda2_gripper', 'part/top', 5)
+configs += bp.generatePregrasps(q0, 'pandas/panda2_gripper', 'part/bottom', 5)

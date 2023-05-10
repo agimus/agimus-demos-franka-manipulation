@@ -84,8 +84,7 @@ class BinPicking(object):
 if __name__ == "__main__":
     from hpp.rostools import process_xacro, retrieve_resource
     Robot.urdfString = process_xacro\
-        ("package://agimus_demos/franka/manipulation/urdf/demo.urdf.xacro",
-         "calibration:=false")
+        ("package://agimus_demos/franka/manipulation/urdf/demo.urdf.xacro")
     Robot.srdfString = ""
 
     problems = ["default", "learning"]
