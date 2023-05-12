@@ -95,6 +95,8 @@ q0 = [0, -pi/4, 0, -3*pi/4, 0, pi/2, pi/4, 0.035, 0.035,
 # Lock gripper in open position.
 ps.createLockedJoint('locked_finger_1', 'pandas/panda2_finger_joint1', [0.035])
 ps.createLockedJoint('locked_finger_2', 'pandas/panda2_finger_joint2', [0.035])
+ps.setConstantRightHandSide('locked_finger_1', True)
+ps.setConstantRightHandSide('locked_finger_2', True)
 graph.addConstraints(graph=True,
                      constraints = Constraints(numConstraints =
                         ['locked_finger_1', 'locked_finger_2']))
