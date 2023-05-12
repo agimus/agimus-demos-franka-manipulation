@@ -47,9 +47,13 @@ except:
     print("reading generic URDF")
     from hpp.rostools import process_xacro, retrieve_resource
     Robot.urdfString = process_xacro\
-      ("package://agimus_demos/franka/manipulation/urdf/demo.urdf.xacro",
-       "calibration:=false")
+      ("package://agimus_demos/franka/manipulation/urdf/demo.urdf.xacro")
 Robot.srdfString = ""
+
+class Box:
+    urdfFilename="package://agimus_demos/franka/manipulation/urdf/big_box.urdf"
+    srdfFilename="package://agimus_demos/franka/manipulation/srdf/big_box.srdf"
+    rootJointType = "freeflyer"
 
 defaultContext = "corbaserver"
 loadServerPlugin (defaultContext, "manipulation-corba.so")
@@ -70,9 +74,11 @@ ps.selectPathProjector ("Progressive", .05)
 ps.selectPathValidation("Graph-Progressive", 0.01)
 vf = ViewerFactory(ps)
 part = TLess(vf, name="part", obj_id="01")
-
+vf.loadRobotModel (Box, "box")
 robot.setJointBounds('part/root_joint', [-1., 1., -1., 1., -0.8, 1.5])
-print("Part loaded")
+robot.setJointBounds('box/root_joint', [-1., 1., -1., 1., -0.8, 1.5])
+
+print("Part and box loaded")
 
 robot.client.manipulation.robot.insertRobotSRDFModel\
     ("pandas", "package://agimus_demos/franka/manipulation/srdf/demo.srdf")
@@ -84,7 +90,8 @@ factory.addGrasp('pandas/panda2_gripper', 'part/lateral_bottom', 0, 0)
 factory.addGrasp('pandas/panda2_gripper', 'part/top', 0, 1)
 factory.addGrasp('pandas/panda2_gripper', 'part/bottom', 0, 1)
 q0 = [0, -pi/4, 0, -3*pi/4, 0, pi/2, pi/4, 0.035, 0.035,
-      0, 0, 1.2, 0, 0, 0, 1]
+      0, 0, 1.2, 0, 0, 0, 1,
+      0, 0, 0.76, 0, 0, 0, 1]
 # Lock gripper in open position.
 ps.createLockedJoint('locked_finger_1', 'pandas/panda2_finger_joint1', [0.035])
 ps.createLockedJoint('locked_finger_2', 'pandas/panda2_finger_joint2', [0.035])

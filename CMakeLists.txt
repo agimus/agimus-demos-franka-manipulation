@@ -33,7 +33,7 @@ INSTALL_DEMO_LAUNCH_FILES(franka manipulation
   )
 
 INSTALL(FILES
-  urdf/small_box.urdf
+  urdf/big_box.urdf
   urdf/demo.urdf.xacro
   urdf/franka_arm.xacro
   urdf/franka_hand.xacro
@@ -45,7 +45,7 @@ INSTALL(FILES
   )
 
 INSTALL(FILES
-  srdf/small_box.srdf
+  srdf/big_box.srdf
   srdf/demo.srdf
   DESTINATION
   ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/srdf
