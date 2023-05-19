@@ -32,7 +32,7 @@ from hpp.corbaserver.manipulation import Robot, \
 from hpp.gepetto.manipulation import ViewerFactory
 from agimus_demos.tools_hpp import RosInterface
 from hpp.corbaserver import wrap_delete
-from create_graph import Factory
+from create_graph import makeGraph
 from t_less import TLess
 from hpp.corbaserver.bin_picking import Client as BpClient
 from tools_hpp import displayHandle, generateTargetConfig, shootPartInBox
@@ -95,42 +95,14 @@ for h in ['part/lateral_top', 'part/lateral_bottom', 'part/top',
     bpc.bin_picking.discretizeHandle(h, nh)
     handles += ['%s_%03d' % (h, i) for i in range(nh)]
 
-# Create a handle and a gripper for the goal position of the object
-# Create specific graph with vertical preplace motions
-graph = ConstraintGraph(robot, 'graph')
-# create preplacement and placement constraints for the object
-ps.createTransformationConstraint("place_part", "", "part/root_joint",
-    [0,0,0,0,0,0,1], 6*[False])
-ps.createLockedJoint("place_part/complement", "part/root_joint",
-    [0,0,0,0,0,0,1])
-ps.setConstantRightHandSide("place_part/complement", False)
-ps.createTransformationConstraint("preplace_part", "box/root_joint",
-    "part/root_joint", [0, 0, .30, 0, 0, 0, 1],
-    [False, False, True, False, False, False])
-ps.createLockedJoint("place_box/complement", "box/root_joint",
-    [0,0,0,0,0,0,1])
-ps.setConstantRightHandSide("place_box/complement", False)
-ps.createTransformationConstraint("vertical_part", "",
-            f"part/root_joint", [0,0,0,0,0,0,1],
-            [True, True, False, True, True, True])
-ps.setConstantRightHandSide("vertical_part", False)
+ps.client.manipulation.robot.addGripper("pandas/support_link", "part/goal",
+    [0.2, 0.2, .95,0,0,0,1])
+ps.client.manipulation.robot.addHandle("part/base_link", "part/center",
+    [0,0,0,0,0,0,1], 3*[True]+3*[False])
+handles += ["part/center"]
 
-factory = ConstraintGraphFactory(graph)
-factory.constraints.removeEmptyConstraints = False
-factory.setGrippers(['pandas/panda2_gripper'])
-factory.setObjects(["part"], [handles], [[]])
-factory.generate()
-for edge in graph.edges.keys():
-    graph.addConstraints(edge = edge,
-        constraints = Constraints(numConstraints = ["place_box/complement"]))
-gripper = "pandas/panda2_gripper"; ig = 0
-for ih, h in enumerate(handles):
-    edge = f"{gripper} > {h} | f_23"
-    graph.addConstraints(edge = edge,
-        constraints = Constraints(numConstraints = ["vertical_part"]))
-    edge = f"{gripper} < {h} | {ig}-{ih}_32"
-    graph.addConstraints(edge = edge,
-        constraints = Constraints(numConstraints = ["vertical_part"]))
+graph = makeGraph(ps, robot, ['pandas/panda2_gripper'],
+                  ["part", "box"], handles)
 
 q0 = [0, -pi/4, 0, -3*pi/4, 0, pi/2, pi/4, 0.035, 0.035,
       0, 0, 1.2, 0, 0, 0, 1,
@@ -166,7 +138,7 @@ while not found:
 
 freeHandles = list()
 
-for handle in handles:
+for handle in handles[:-1]:
     res, msg = bpc.bin_picking.collisionTest('effector', handle, q)
     if not res:
         freeHandles.append(handle)
