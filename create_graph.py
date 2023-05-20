@@ -62,7 +62,7 @@ class Factory(ConstraintGraphFactory):
                 [f"place_{box}/complement"]))
         ig = 0; gripper = self.grippers[ig]
         for ih, h in enumerate(self.handles):
-            if h == "center": continue
+            if h.startswith("part/center"): continue
             edge = f"{gripper} > {h} | f_23"
             self.graph.addConstraints(edge = edge,
                 constraints = Constraints(numConstraints =
@@ -74,15 +74,43 @@ class Factory(ConstraintGraphFactory):
                 [f"vertical_{part}"])
             )
 
+factory = None
 # Create a handle and a gripper for the goal position of the object
 # Create specific graph with vertical preplace motions
 # The last handle is the center of the part.
 def makeGraph(ps, robot, grippers, objects, handles):
+    global factory
     graph = ConstraintGraph(robot, 'graph')
 
     factory = Factory(ps, graph)
     factory.constraints.removeEmptyConstraints = False
     factory.setGrippers(grippers)
-    factory.setObjects(objects, [handles, []], [[], []])
+    factory.setObjects(objects, handles, [[], []])
+    # rules
+    rules = [
+        Rule(grippers=[factory.grippers[0]], handles = ["part/center*"],
+             link=False),
+        Rule(grippers=[factory.grippers[1]], handles = ["part/center2"],
+             link=False),
+        Rule(grippers=[factory.grippers[2]], handles = ["part/center1"],
+             link=False),
+        Rule(grippers=[factory.grippers[1]], handles = ["part/lateral*"],
+             link=False),
+        Rule(grippers=[factory.grippers[1]], handles = ["part/top*"],
+             link=False),
+        Rule(grippers=[factory.grippers[1]], handles = ["part/bottom*"],
+             link=False),
+        Rule(grippers=[factory.grippers[2]], handles = ["part/lateral*"],
+             link=False),
+        Rule(grippers=[factory.grippers[2]], handles = ["part/top*"],
+             link=False),
+        Rule(grippers=[factory.grippers[2]], handles = ["part/bottom*"],
+             link=False),
+        Rule(grippers=factory.grippers,
+             handles = [".*", "part/center1", "part/center2"],
+             link=False),
+        Rule(grippers=[".*"], handles=[".*"], link=True)
+        ]
+    factory.setRules(rules)
     factory.generate()
     return graph

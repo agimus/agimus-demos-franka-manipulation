@@ -37,7 +37,6 @@ def shootPartInBox(robot, q0):
     q[r+0] = .56 * np.random.uniform() - .28
     q[r+1] = .36 * np.random.uniform() - .18
     q[r+2] = .20 * np.random.uniform()
-    print(q[r:r+7])
     Mp = Mb * Transform(q[r:r+7])
     qres = q0[:]
     qres[r:r+7] = list(Mp)
@@ -49,11 +48,29 @@ def shootPartInBox(robot, q0):
 def displayHandle(viewer, name):
     robot = viewer.robot
     joint, pose = robot.getHandlePositionInJoint(name)
-    link = robot.getLinkNames('part/root_joint')[0]
     hname = 'handle__' + name.replace('/', '_')
     viewer.client.gui.addXYZaxis(hname, [0, 1, 0, 1], 0.005, 0.015)
-    viewer.client.gui.addToGroup(hname, robot.name + '/' + link)
+    if joint != "universe":
+        link = robot.getLinkNames(joint)[0]
+        viewer.client.gui.addToGroup(hname, robot.name + '/' + link)
+    else:
+        viewer.client.gui.addToGroup(hname, robot.name)
     viewer.client.gui.applyConfiguration(hname, pose)
+
+## Display a frame in gepetto-gui corresponding to a handle
+# \param robot instance of class hpp.corbaserver.robot.Robot
+# \param name name of the handle.
+def displayGripper(viewer, name):
+    robot = viewer.robot
+    joint, pose = robot.getGripperPositionInJoint(name)
+    gname = 'gripper__' + name.replace('/', '_')
+    viewer.client.gui.addXYZaxis(gname, [0, 1, 0, 1], 0.005, 0.015)
+    if joint != "universe":
+        link = robot.getLinkNames(joint)[0]
+        viewer.client.gui.addToGroup(gname, robot.name + '/' + link)
+    else:
+        viewer.client.gui.addToGroup(gname, robot.name)
+    viewer.client.gui.applyConfiguration(gname, pose)
 
 # Generate target config from randomly sampled configurations
 

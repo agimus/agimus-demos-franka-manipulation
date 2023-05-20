@@ -35,7 +35,8 @@ from hpp.corbaserver import wrap_delete
 from create_graph import makeGraph
 from t_less import TLess
 from hpp.corbaserver.bin_picking import Client as BpClient
-from tools_hpp import displayHandle, generateTargetConfig, shootPartInBox
+from tools_hpp import displayGripper, displayHandle, generateTargetConfig, \
+    shootPartInBox
 
 connectedToRos = False
 
@@ -95,14 +96,20 @@ for h in ['part/lateral_top', 'part/lateral_bottom', 'part/top',
     bpc.bin_picking.discretizeHandle(h, nh)
     handles += ['%s_%03d' % (h, i) for i in range(nh)]
 
-ps.client.manipulation.robot.addGripper("pandas/support_link", "part/goal",
-    [0.2, 0.2, .95,0,0,0,1])
-ps.client.manipulation.robot.addHandle("part/base_link", "part/center",
-    [0,0,0,0,0,0,1], 3*[True]+3*[False])
-handles += ["part/center"]
+ps.client.manipulation.robot.addGripper("pandas/support_link", "goal/gripper1",
+    [0.563, 0.2, .95,0,sqrt(2)/2,0,sqrt(2)/2], 0.0)
+ps.client.manipulation.robot.addGripper("pandas/support_link", "goal/gripper2",
+    [0.563, 0.3, .95,0,sqrt(2)/2,0,sqrt(2)/2], 0.0)
+ps.client.manipulation.robot.addHandle("part/base_link", "part/center1",
+    [0,0,0,0,sqrt(2)/2,0,sqrt(2)/2], 3.0, 6*[True])
+ps.client.manipulation.robot.addHandle("part/base_link", "part/center2",
+    [0,0,0,0,-sqrt(2)/2,0,sqrt(2)/2], 3.0, 6*[True])
+#handles = ["part/top"]
+handles += ["part/center1", "part/center2"]
 
-graph = makeGraph(ps, robot, ['pandas/panda2_gripper'],
-                  ["part", "box"], handles)
+graph = makeGraph(ps, robot, ['pandas/panda2_gripper', 'goal/gripper1',
+                              'goal/gripper2'],
+                  ["part", "box"], [handles, []])
 
 q0 = [0, -pi/4, 0, -3*pi/4, 0, pi/2, pi/4, 0.035, 0.035,
       0, 0, 1.2, 0, 0, 0, 1,
