@@ -45,7 +45,7 @@
         </collision>
       </link>
 
-      <link name="wall_link">
+      <link name="wall_link_1">
         <inertial>
           <mass value="200"/>
           <origin xyz="0 0 1."/>
@@ -61,6 +61,47 @@
           <origin xyz="0 0 1.0"/>
           <geometry>
             <box size="3.0 0.1 2.0"/>
+          </geometry>
+        </collision>
+      </link>
+      <link name="wall_link_2">
+        <inertial>
+          <mass value="200"/>
+          <origin xyz="0 0 1."/>
+          <inertia ixx="50"  ixy="0"  ixz="0" iyy="50" iyz="0" izz="50" />
+        </inertial>
+        <visual>
+          <origin xyz="0 0 1.0"/>
+          <geometry>
+            <box size="0.1 2.0 2.0"/>
+          </geometry>
+          <material name="lightGrey">
+            <color rgba="0.9 0.9 0.9 0.5"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 0 1.0"/>
+          <geometry>
+            <box size="0.1 2.0 2.0"/>
+          </geometry>
+        </collision>
+      </link>
+      <link name="wall_link_3">
+        <inertial>
+          <mass value="200"/>
+          <origin xyz="0 0 1."/>
+          <inertia ixx="50"  ixy="0"  ixz="0" iyy="50" iyz="0" izz="50" />
+        </inertial>
+        <visual>
+          <origin xyz="0 0 1.0"/>
+          <geometry>
+            <box size="0.7 0.12 2.0"/>
+          </geometry>
+        </visual>
+        <collision>
+          <origin xyz="0 0 1.0"/>
+          <geometry>
+            <box size="0.7 0.12 2.0"/>
           </geometry>
         </collision>
       </link>
@@ -100,10 +141,20 @@
         <parent link="support_link" />
         <child  link="panda2_link0" />
       </joint>
-      <joint name="wall_joint" type="fixed">
+      <joint name="wall_joint_1" type="fixed">
         <origin xyz="0 1.07 0" />
         <parent link="world"/>
-        <child link="wall_link"/>
+        <child link="wall_link_1"/>
+      </joint>
+      <joint name="wall_joint_2" type="fixed">
+        <origin xyz="1.78 0 0" />
+        <parent link="world"/>
+        <child link="wall_link_2"/>
+      </joint>
+      <joint name="wall_joint_3" type="fixed">
+        <origin xyz="1.40 0.96 0" />
+        <parent link="world"/>
+        <child link="wall_link_3"/>
       </joint>
       <joint name="panda1_box_joint" type="fixed">
         <origin xyz="-0.6315 0 1.17" />
