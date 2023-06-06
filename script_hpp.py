@@ -78,8 +78,8 @@ vf = ViewerFactory(ps)
 part = TLess(vf, name="part", obj_id="01")
 vf.loadRobotModel (Box, "box")
 
-robot.setJointBounds('part/root_joint', [-1., 1.5, -1., 1., -0.8, 1.5])
-robot.setJointBounds('box/root_joint', [-1., 1., -1., 1., -0.8, 1.5])
+robot.setJointBounds('part/root_joint', [-1., 1.5, -1., 1., 0., 2.2])
+robot.setJointBounds('box/root_joint', [-1., 1., -1., 1., 0., 1.8])
 
 print("Part and box loaded")
 
@@ -131,13 +131,13 @@ binPicking.buildEffectors([ f'box/base_link_{i}' for i in range(5) ], q0)
 print("Generating goal configurations.")
 binPicking.generateGoalConfigs(q0)
 
-found = False
-while not found:
-    q = shootPartInBox(robot, q0)
-    found, msg = robot.isConfigValid(q)
-
-print("Solving")
-res = False
-res, p = binPicking.solve(q)
-# if res:
-#     ps.client.basic.problem.addPath(p)
+for i in range(10):
+    found = False
+    while not found:
+        q = shootPartInBox(robot, q0)
+        found, msg = robot.isConfigValid(q)
+    print("Solving")
+    res = False
+    res, p = binPicking.solve(q)
+    if res:
+        ps.client.basic.problem.addPath(p)

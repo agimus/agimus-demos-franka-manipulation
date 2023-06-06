@@ -171,8 +171,14 @@ class BinPicking(object):
         # destruction.
         self.inStatePlanner = None
         self.inStatePlanner = InStatePlanner(self.ps, self.graph)
-        self.inStatePlanner.timeOutPathPlanning = 50.
-
+        self.inStatePlanner.timeOutPathPlanning = 3.
+        self.inStatePlanner.optimizerTypes = ["EnforceTransitionSemantic",
+                                              "SimpleTimeParameterization"]
+        self.inStatePlanner.parameters['SimpleTimeParameterization/order'] = 2
+        self.inStatePlanner.parameters\
+            ['SimpleTimeParameterization/maxAcceleration'] = 2.
+        self.inStatePlanner.parameters\
+            ['SimpleTimeParameterization/safety'] = .95
     def buildEffectors(self, obstacles, q):
         """
         build and effector to test collision of grasps
@@ -337,10 +343,12 @@ class BinPicking(object):
         self.inStatePlanner.setEdge(edge)
         res, p2, msg = self.inStatePlanner.directPath(q1, q2, False)
         assert(res)
+        p2 = self.inStatePlanner.timeParameterization(p2.asVector())
         edge = f"{gripper} > {handle} | f_23"
         self.inStatePlanner.setEdge(edge)
         res, p3, msg = self.inStatePlanner.directPath(q2, q3, False)
         assert(res)
+        p3 = self.inStatePlanner.timeParameterization(p3.asVector())
         ig = self.robotGrippers.index(gripper)
         ih = self.handles.index(handle)
         edge = f"Loop | {ig}-{ih}"
@@ -357,10 +365,12 @@ class BinPicking(object):
         self.inStatePlanner.setEdge(edge)
         res, p5, msg = self.inStatePlanner.directPath(q4, q5, False)
         assert(res)
+        p5 = self.inStatePlanner.timeParameterization(p5.asVector())
         edge = f"{gripper} < {handle} | {ig}-{ih}:{ng+igg}-{nh+igg}_21"
         self.inStatePlanner.setEdge(edge)
         res, p6, msg = self.inStatePlanner.directPath(q5, q6, False)
         assert(res)
+        p6 = self.inStatePlanner.timeParameterization(p6.asVector())
         edge = "Loop | f"
         self.inStatePlanner.setEdge(edge)
         # Return to initial configuration
