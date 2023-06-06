@@ -175,6 +175,8 @@
                       reason="adjacent"/>
   <disable_collisions link1="panda2_link3_sc" link2="panda2_link4_sc"
                       reason="adjacent"/>
+  <disable_collisions link1="panda2_link3_sc" link2="panda2_link5_sc"
+                      reason="adjacent"/>
   <disable_collisions link1="panda2_link4_sc" link2="panda2_link5_sc"
                       reason="adjacent"/>
   <disable_collisions link1="panda2_link5_sc" link2="panda2_link6_sc"
