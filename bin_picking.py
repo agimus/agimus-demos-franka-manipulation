@@ -35,6 +35,31 @@ from agimus_demos.tools_hpp import concatenatePaths
 from tools_hpp import displayGripper, displayHandle, generateTargetConfig, \
     shootPartInBox
 
+## Write a handle in a string in srdf format
+def writeHandleInSrdf(robot, handle, clearance, mask):
+    joint, pose = robot.getHandlePositionInJoint(handle)
+    link = robot.getLinkNames(joint)[0]
+    # Guess prefix
+    rank = handle.find("/")
+    if rank == -1:
+        prefix = ""
+        handle_short = handle
+        link_short = link
+    else:
+        prefix = handle[:rank]
+        handle_short = handle[rank+1:]
+        if link[:rank] != prefix:
+            raise RuntimeError(
+                f"Expected prefix {prefix}/ in link name, but got {link}")
+        link_short = link[rank+1:]
+    res = f'''
+  <handle name="{handle_short}" clearance="{clearance}">
+    <position xyz="{pose[0]} {pose[1]} {pose[2]}" wxyz="{pose[6]} {pose[3]} {pose[4]} {pose[5]}"/>
+    <link name="{link_short}"/>
+    <mask>{mask[0]} {mask[1]} {mask[2]} {mask[3]} {mask[4]} {mask[5]}</mask>
+  </handle>
+'''
+    return res
 ## This class defines a bin-picking problem.
 #
 class BinPicking(object):

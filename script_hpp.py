@@ -32,7 +32,6 @@ from hpp.corbaserver.manipulation import Robot, \
 from hpp.gepetto.manipulation import ViewerFactory
 from agimus_demos.tools_hpp import RosInterface
 from hpp.corbaserver import wrap_delete
-from t_less import TLess
 from tools_hpp import displayGripper, displayHandle, generateTargetConfig, \
     shootPartInBox
 from bin_picking import BinPicking
@@ -56,6 +55,13 @@ class Box:
     srdfFilename="package://agimus_demos/franka/manipulation/srdf/big_box.srdf"
     rootJointType = "freeflyer"
 
+class TLess:
+    urdfFilename = \
+        "package://agimus_demos/franka/manipulation/urdf/t-less/obj_01.urdf"
+    srdfFilename = \
+        "package://agimus_demos/franka/manipulation/srdf/t-less/obj_01.srdf"
+    rootJointType = "freeflyer"
+
 defaultContext = "corbaserver"
 loadServerPlugin(defaultContext, "manipulation-corba.so")
 loadServerPlugin(defaultContext, "bin_picking.so")
@@ -75,8 +81,8 @@ ps.setParameter('SimpleTimeParameterization/safety', 0.95)
 ps.selectPathProjector ("Progressive", .05)
 ps.selectPathValidation("Graph-Progressive", 0.01)
 vf = ViewerFactory(ps)
-part = TLess(vf, name="part", obj_id="01")
-vf.loadRobotModel (Box, "box")
+vf.loadObjectModel (TLess, "part")
+vf.loadObjectModel (Box, "box")
 
 robot.setJointBounds('part/root_joint', [-1., 1.5, -1., 1., 0., 2.2])
 robot.setJointBounds('box/root_joint', [-1., 1., -1., 1., 0., 1.8])
@@ -87,7 +93,6 @@ robot.client.manipulation.robot.insertRobotSRDFModel\
     ("pandas", "package://agimus_demos/franka/manipulation/srdf/demo.srdf")
 
 # Discretize handles
-handles = list()
 ps.client.manipulation.robot.addGripper("pandas/support_link", "goal/gripper1",
     [1.05, 0.4, 1.,0,-sqrt(2)/2,0,sqrt(2)/2], 0.0)
 ps.client.manipulation.robot.addGripper("pandas/support_link", "goal/gripper2",
@@ -103,13 +108,18 @@ ps.createLockedJoint('locked_finger_2', 'pandas/panda2_finger_joint2', [0.035])
 ps.setConstantRightHandSide('locked_finger_1', True)
 ps.setConstantRightHandSide('locked_finger_2', True)
 
+handles = list()
+handles += ["part/lateral_top_%03i"%i for i in range(16)]
+handles += ["part/lateral_bottom_%03i"%i for i in range(16)]
+handles += ["part/top_%03i"%i for i in range(16)]
+handles += ["part/bottom_%03i"%i for i in range(16)]
+
 binPicking = BinPicking(ps)
 binPicking.objects = ["part", "box"]
 binPicking.robotGrippers = ['pandas/panda2_gripper']
 binPicking.goalGrippers = ['goal/gripper1', 'goal/gripper2']
 binPicking.goalHandles = ["part/center1", "part/center2"]
-binPicking.handlesToDiscretize = ['part/lateral_top', 'part/lateral_bottom',
-                                  'part/top', 'part/bottom' ]
+binPicking.handles = handles
 binPicking.graphConstraints = ['locked_finger_1', 'locked_finger_2']
 print("Building constraint graph")
 binPicking.buildGraph()
