@@ -45,10 +45,22 @@ INSTALL(FILES
   )
 
 INSTALL(FILES
+  urdf/t-less/obj_01.urdf
+  DESTINATION
+  ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/urdf/t-less
+  )
+
+INSTALL(FILES
   srdf/big_box.srdf
   srdf/demo.srdf
   DESTINATION
   ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/srdf
+  )
+
+INSTALL(FILES
+  srdf/t-less/obj_01.srdf
+  DESTINATION
+  ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/srdf/t-less
   )
 
 INSTALL(FILES

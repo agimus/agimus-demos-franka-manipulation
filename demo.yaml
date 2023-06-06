@@ -5,19 +5,19 @@ demo:
         package: agimus_demos
         file: franka/manipulation/srdf/demo.srdf
   objects:
-    box:
+    part:
       urdf:
         package: agimus_demos
-        file: franka/manipulation/urdf/small_box.urdf
+        file: franka/manipulation/urdf/t-less/obj_01.urdf
       srdf:
         package: agimus_demos
-        file: franka/manipulation/srdf/small_box.srdf
+        file: franka/manipulation/srdf/t-less/obj_01.srdf
       contacts:
-        [box/box_surface]
+        []
   grippers:
     [pandas/panda2_gripper,]
   contact surfaces:
-    [pandas/top,]
+    []
 
 sot:
   robot: franka

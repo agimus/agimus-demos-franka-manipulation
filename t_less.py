@@ -64,6 +64,6 @@ class TLess:
                 f'"package://agimus_demos/franka/manipulation/srdf/t-less/obj_{obj_id}.srdf"')
         with open(filename) as f:
             srdfString=f.read()
-        urdfString = self.template.format(name = name, obj_id = obj_id)
-        vf.loadRobotModelFromString(name, "freeflyer", urdfString,
+        self.urdfString = self.template.format(name = name, obj_id = obj_id)
+        vf.loadRobotModelFromString(name, "freeflyer", self.urdfString,
                                     srdfString)
