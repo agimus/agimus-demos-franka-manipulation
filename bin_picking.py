@@ -165,6 +165,7 @@ class BinPicking(object):
                 rules += [
                     Rule(grippers=[gripper], handles=[handle + "*"], link=False)
                     ]
+        # object cannot be placed in two goal positions at the same time
         rules += [
             Rule(grippers=self.robotGrippers + self.goalGrippers,
                  handles = [".*", "part/center1", "part/center2"],
@@ -172,6 +173,32 @@ class BinPicking(object):
             Rule(grippers=[".*"], handles=[".*"], link=True)
         ]
         return rules
+
+    def writeRules(self, f):
+        """
+        Write the rules in a stream
+        """
+        f.write("rules:\n")
+        for r in self._rules():
+            f.write(f"  - grippers: {r.grippers}\n" +
+                    f"    handles: {r.handles}\n" +
+                    f"    link: {r.link}\n")
+
+    def writeTranstions(self, f):
+        """
+        Write the edges in a yaml file
+        """
+        f.write("transitions:\n")
+        for e in self.graph.edges.keys():
+            f.write(f'  - "{e}"\n')
+
+    def writeStates(self, f):
+        """
+        Write the nodes of the constraint graph in a yaml file
+        """
+        f.write("states:\n")
+        for s in self.graph.nodes.keys():
+            f.write(f'  - "{s}"\n')
 
     def buildGraph(self):
         """
@@ -223,7 +250,7 @@ class BinPicking(object):
                     break
             if edge is None:
                 raise RuntimeError(
-                    f"Did not find any edge where {gripper} grasps naything")
+                    f"Did not find any edge where {gripper} grasps anything")
             self.bpc.bin_picking.createEffector(gripper, gripper, q,
                                                 self.graph.edges[edge])
         for o in obstacles:
