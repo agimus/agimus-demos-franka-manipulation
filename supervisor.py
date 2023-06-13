@@ -119,7 +119,33 @@ def makeSupervisorWithFactory(robot):
                                  prefix=o)
         attach_all_to_link(objectModel, "base_link", srdfDict[o])
 
+    # Add goal grippers
+    srdfDict["pandas"]["grippers"]["goal/gripper1"] = {
+        "clearance": 0.0, "link": "support_link",
+        "position": [1.05, 0.4, 1.,0,-sqrt(2)/2,0,sqrt(2)/2],
+        "name": "goal/gripper1", "robot": "pandas"
+    }
+    srdfDict["pandas"]["grippers"]["goal/gripper2"] = {
+        "clearance": 0.0, "link": "support_link",
+        "position": [1.05, 0.5, 1.,0,-sqrt(2)/2,0,sqrt(2)/2],
+        "name": "goal/gripper2", "robot": "pandas"
+    }
+    # Add goal handles
+    srdfDict["part"]["handles"]["part/center1"] = {
+        "robot": "part", "name": "part/center1", "clearance": 0.03,
+        "link": "part/base_link", "position": [0,0,0,0,sqrt(2)/2,0,sqrt(2)/2],
+        "mask": 3*[True] + [False, True, True]
+    }
+    srdfDict["part"]["handles"]["part/center2"] = {
+        "robot": "part", "name": "part/center2", "clearance": 0.03,
+        "link": "part/base_link", "position": [0,0,0,0,-sqrt(2)/2,0,sqrt(2)/2],
+        "mask": 3*[True] + [False, True, True]
+    }
+
     grippers = list(globalDemoDict["grippers"])
+    grippers.append("goal/gripper1")
+    grippers.append("goal/gripper2")
+
     handlesPerObjects = list()
     contactPerObjects = list()
     for o in objects:
@@ -135,6 +161,7 @@ def makeSupervisorWithFactory(robot):
     print (f"env contact surfaces: {envContactSurfaces}")
     supervisor = Supervisor(robot, prefix=list(robotDict.keys())[0])
     factory = Factory(supervisor)
+    factory.createPreplaceAnyway = True
     factory.parameters["period"] = 0.01  # TODO soon: robot.getTimeStep()
     factory.parameters["simulateTorqueFeedback"] = simulateTorqueFeedbackForEndEffector
     factory.parameters["addTracerToAdmittanceController"] = False
@@ -172,11 +199,13 @@ def makeSupervisorWithFactory(robot):
     for ih, h in enumerate(factory.handles):
         # Add preaction to open the gripper
         transitionName_12 = f'{g} > {h} | f_12'
-        supervisor.actions[transitionName_12].preActions.append(openGripper)
-        transitionName_23 = f'{g} > {h} | f_23'
-        supervisor.actions[transitionName_23].preActions.append(closeGripper)
-        transitionName_21 = f'{g} < {h} | {ig}-{ih}_21'
-        supervisor.actions[transitionName_21].preActions.append(openGripper)
+        if transitionName_12 in supervisor.actions:
+            supervisor.actions[transitionName_12].preActions.append(openGripper)
+            transitionName_23 = f'{g} > {h} | f_23'
+            supervisor.actions[transitionName_23].preActions.append(
+                closeGripper)
+            transitionName_21 = f'{g} < {h} | {ig}-{ih}_21'
+            supervisor.actions[transitionName_21].preActions.append(openGripper)
     supervisor.makeInitialSot()
     return factory, supervisor
 

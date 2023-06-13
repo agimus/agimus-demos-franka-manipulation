@@ -212,9 +212,13 @@ class BinPicking(object):
             self.bpc.bin_picking.discretizeHandle(h, self.nh)
             self.handles += ['%s_%03d' % (h, i) for i in range(self.nh)]
         # build graph
+        # Sort handles in alphabetic order to be sure that the order is the
+        # same in agimus-sot.
+        handles = self.handles + self.goalHandles
+        handles.sort()
         self.factory, self.graph = makeGraph(
             self.ps, self.robot, self.robotGrippers + self.goalGrippers,
-            self.objects, [self.handles + self.goalHandles, []], self._rules())
+            self.objects, [handles, []], self._rules())
         self.graph.addConstraints(graph=True,
             constraints = Constraints(numConstraints = self.graphConstraints))
         self.graph.initialize()
@@ -262,30 +266,54 @@ class BinPicking(object):
           - q configuration that provides the pose of other objects
         """
         self.q_goal = q[:]
-        nrg = len(self.robotGrippers)
-        nh = len(self.handles)
-        for irg, robotGripper in enumerate(self.robotGrippers):
+        # Separate indices of handles and grippers to distinguish goal
+        # grippers/handles from regular ones
+        robotGrippers = list()
+        goalGrippers = list()
+        regularHandles = list()
+        goalHandles = list()
+        for i, h in enumerate(self.factory.handles):
+            if h in self.handles:
+                regularHandles.append(i)
+            elif h in self.goalHandles:
+                goalHandles.append(i)
+            else:
+                raise RuntimeError(
+                    f"'{h}' is neither a regular handle nor a goal handle")
+        for i, g in enumerate(self.factory.grippers):
+            if g in self.robotGrippers:
+                robotGrippers.append(i)
+            elif g in self.goalGrippers:
+                goalGrippers.append(i)
+            else:
+                raise RuntimeError(
+                    f"'{g}' is neither a regular gripper nor a goal gripper")
+        for irg in robotGrippers:
+            robotGripper = self.factory.grippers[irg]
             self.goalConfigs["pregrasp"][robotGripper] = dict()
             self.goalConfigs["grasp"][robotGripper] = dict()
             self.goalConfigs["preplace"][robotGripper] = dict()
             self.goalGrasps[robotGripper] = dict()
 
-            for ih, handle in enumerate(self.handles):
+            for ih in regularHandles:
+                handle = self.factory.handles[ih]
                 for igg, (goalGripper, goalHandle) in enumerate(
                         zip(self.goalGrippers, self.goalHandles)):
                     edge = f"{goalGripper} > {goalHandle} | {irg}-{ih}_01"
-                    assert(edge in self.graph.edges.keys())
+                    if not edge in self.graph.edges.keys(): breakpoint()
                     res, q1 = generateTargetConfig(self.robot, self.graph,
                                                    edge, q)
                     if not res: continue
                     edge = f"{goalGripper} > {goalHandle} | {irg}-{ih}_12"
-                    assert(edge in self.graph.edges.keys())
+                    if not edge in self.graph.edges.keys(): breakpoint()
                     res, q2 = generateTargetConfig(self.robot, self.graph,
                                                    edge, q1)
                     if not res: continue
+                    ggIndex = self.factory.grippers.index(goalGripper)
+                    ghIndex = self.factory.handles.index(goalHandle)
                     edge = f"{robotGripper} < {handle} | {irg}-{ih}:" + \
-                        f"{igg+nrg}-{igg+nh}_21"
-                    assert(edge in self.graph.edges.keys())
+                        f"{ggIndex}-{ghIndex}_21"
+                    if not edge in self.graph.edges.keys(): breakpoint()
                     res, q3 = generateTargetConfig(self.robot, self.graph,
                                                    edge, q2)
                     self.goalConfigs["pregrasp"][robotGripper][handle] = q1
@@ -401,8 +429,8 @@ class BinPicking(object):
         res, p3, msg = self.inStatePlanner.directPath(q2, q3, False)
         assert(res)
         p3 = self.inStatePlanner.timeParameterization(p3.asVector())
-        ig = self.robotGrippers.index(gripper)
-        ih = self.handles.index(handle)
+        ig = self.factory.grippers.index(gripper)
+        ih = self.factory.handles.index(handle)
         edge = f"Loop | {ig}-{ih}"
         self.inStatePlanner.setEdge(edge)
         try:
@@ -418,7 +446,9 @@ class BinPicking(object):
         res, p5, msg = self.inStatePlanner.directPath(q4, q5, False)
         assert(res)
         p5 = self.inStatePlanner.timeParameterization(p5.asVector())
-        edge = f"{gripper} < {handle} | {ig}-{ih}:{ng+igg}-{nh+igg}_21"
+        ggIndex = self.factory.grippers.index(goalGripper)
+        ghIndex = self.factory.handles.index(goalHandle)
+        edge = f"{gripper} < {handle} | {ig}-{ih}:{ggIndex}-{ghIndex}_21"
         self.inStatePlanner.setEdge(edge)
         res, p6, msg = self.inStatePlanner.directPath(q5, q6, False)
         assert(res)
