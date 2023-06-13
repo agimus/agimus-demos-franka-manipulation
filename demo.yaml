@@ -18,6 +18,409 @@ demo:
     [pandas/panda2_gripper,]
   contact surfaces:
     []
+  rules:
+    - grippers: ['pandas/panda2_gripper']
+      handles: ['part/center1']
+      link: False
+    - grippers: ['pandas/panda2_gripper']
+      handles: ['part/center2']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/center2']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/center1']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_000']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_001']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_002']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_003']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_004']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_005']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_006']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_007']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_008']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_009']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_010']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_011']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_012']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_013']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_014']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_top_015']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_000']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_001']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_002']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_003']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_004']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_005']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_006']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_007']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_008']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_009']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_010']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_011']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_012']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_013']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_014']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/lateral_bottom_015']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_000']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_001']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_002']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_003']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_004']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_005']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_006']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_007']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_008']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_009']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_010']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_011']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_012']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_013']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_014']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/top_015']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_000']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_001']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_002']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_003']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_004']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_005']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_006']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_007']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_008']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_009']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_010']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_011']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_012']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_013']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_014']
+      link: False
+    - grippers: ['goal/gripper1']
+      handles: ['part/bottom_015']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_000']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_001']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_002']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_003']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_004']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_005']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_006']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_007']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_008']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_009']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_010']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_011']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_012']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_013']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_014']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_top_015']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_000']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_001']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_002']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_003']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_004']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_005']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_006']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_007']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_008']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_009']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_010']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_011']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_012']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_013']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_014']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/lateral_bottom_015']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_000']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_001']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_002']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_003']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_004']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_005']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_006']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_007']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_008']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_009']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_010']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_011']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_012']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_013']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_014']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/top_015']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_000']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_001']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_002']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_003']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_004']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_005']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_006']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_007']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_008']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_009']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_010']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_011']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_012']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_013']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_014']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/bottom_015']
+      link: False
+    - grippers: ['pandas/panda2_gripper', 'goal/gripper1', 'goal/gripper2']
+      handles: ['.*', 'part/center1', 'part/center2']
+      link: False
+    - grippers: ['.*']
+      handles: ['.*']
+      link: True
 
 sot:
   robot: franka

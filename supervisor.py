@@ -26,9 +26,11 @@
 
 import time
 import numpy as np
+from math import sqrt
 from dynamic_graph.ros import RosPublish, RosSubscribe
 from agimus_sot.action import Action
 from franka_gripper.msg import GraspActionGoal, MoveActionGoal
+from hpp.corbaserver.manipulation import Rule
 
 Action.maxControlSqrNorm = 40
 
@@ -146,6 +148,13 @@ def makeSupervisorWithFactory(robot):
     for k in handlesPerObjects[0]:
         factory.handleFrames[k].hasVisualTag = False
     factory.setupContactFrames(srdf["contacts"])
+    # Read rules if published in ros parameter
+    if "rules" in globalDemoDict:
+        rules = list()
+        for r in globalDemoDict["rules"]:
+            rules.append(Rule(grippers=r["grippers"], handles=r["handles"],
+                              link=r["link"]))
+        factory.setRules(rules)
     factory.generate()
 
     moveActionGoal = MoveActionGoal()
