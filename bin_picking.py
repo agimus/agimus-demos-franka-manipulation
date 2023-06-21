@@ -361,7 +361,7 @@ class BinPicking(object):
                 if not col:
                     self._freeGrasps[gripper].append(handle)
                     res = True
-        return True
+        return res
 
     def selectGrasp(self, q):
         """
