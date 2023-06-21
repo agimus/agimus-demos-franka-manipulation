@@ -51,6 +51,13 @@ class OpenGripper(object):
         signal_name = 'sout'
         self.ros_publish.add('vector', signal_name, '/agimus/sot/open_gripper')
         self.signal = self.ros_publish.signal(signal_name)
+        # Subscribe to topic that broadcast result of opening and grasping
+        self.ros_subscribe = RosSubscribe("pub_GripperSuccess")
+        # As we use the same entity for several instances of this class,
+        # we need to add the signal only once.
+        if not self.ros_subscribe.hasSignal('sout'):
+            self.ros_subscribe.add("int", signal_name,
+                                   '/agimus/gripper/feedback')
 
     def __call__(self):
         # Send command
@@ -58,9 +65,19 @@ class OpenGripper(object):
                                       self.moveActionGoal.goal.speed])
         t = self.robot.device.state.time
         self.ros_publish.signal("trigger").recompute(t)
-        # wait for 3 seconds
-        time.sleep(3.)
-        return True, ""
+        # wait for gripper feedback
+        self.ros_subscribe.signal('sout').recompute(t)
+        res = self.ros_subscribe.signal('sout').value
+        while res == 0:
+            time.sleep(.1)
+            t = self.robot.device.state.time
+            self.ros_subscribe.signal('sout').recompute(t)
+            res = self.ros_subscribe.signal('sout').value
+        if res == 1:
+            return True, ""
+        if res == -1:
+            return False, "Failed to open the gripper."
+        rospy.loginfo(f"res = {res} is not a regular value.")
 
 class CloseGripper(object):
     """
@@ -76,6 +93,13 @@ class CloseGripper(object):
         signal_name = 'sout'
         self.ros_publish.add('vector', signal_name, '/agimus/sot/close_gripper')
         self.signal = self.ros_publish.signal(signal_name)
+        # Subscribe to topic that broadcast result of opening and grasping
+        self.ros_subscribe = RosSubscribe("pub_GripperSuccess")
+        # As we use the same entity for several instances of this class,
+        # we need to add the signal only once.
+        if not self.ros_subscribe.hasSignal('sout'):
+            self.ros_subscribe.add("int", signal_name,
+                                   '/agimus/gripper/feedback')
 
     def __call__(self):
         self.signal.value = np.array([self.graspActionGoal.goal.width,
@@ -85,8 +109,20 @@ class CloseGripper(object):
         self.graspActionGoal.goal.force,])
         t = self.robot.device.state.time
         self.ros_publish.signal("trigger").recompute(t)
-        time.sleep(3.)
-        return True, ""
+        # wait for gripper feedback
+        self.ros_subscribe.signal('sout').recompute(t)
+        res = self.ros_subscribe.signal('sout').value
+        while res == 0:
+            time.sleep(.1)
+            t = self.robot.device.state.time
+            self.ros_subscribe.signal('sout').recompute(t)
+            res = self.ros_subscribe.signal('sout').value
+        if res == 1:
+            return True, ""
+        if res == -1:
+            return False, "Failed to open the gripper."
+        rospy.loginfo(f"res = {res} is not a regular value.")
+
 
 
 def makeSupervisorWithFactory(robot):
