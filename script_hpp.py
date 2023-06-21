@@ -131,6 +131,8 @@ q0 = [0, -pi/4, 0, -3*pi/4, 0, pi/2, pi/4, 0.035, 0.035,
 if connectedToRos:
     ri = RosInterface(robot)
     q = ri.getCurrentConfig(q0)
+    res, q, err = binPicking.graph.applyNodeConstraints('free', q)
+    assert(res)
 else:
     q = q0[:]
 
@@ -144,10 +146,12 @@ binPicking.generateGoalConfigs(q0)
 for i in range(10):
     found = False
     while not found:
-        q = shootPartInBox(robot, q0)
-        found, msg = robot.isConfigValid(q)
+        q_init = shootPartInBox(robot, q)
+        found, msg = robot.isConfigValid(q_init)
     print("Solving")
     res = False
-    res, p = binPicking.solve(q)
+    res, p = binPicking.solve(q_init)
     if res:
         ps.client.basic.problem.addPath(p)
+    else:
+        print(p)
