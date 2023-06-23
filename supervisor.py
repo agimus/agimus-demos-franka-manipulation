@@ -225,11 +225,11 @@ def makeSupervisorWithFactory(robot):
     moveActionGoal.goal.speed = 0.1
     openGripper = OpenGripper(robot, moveActionGoal)
     graspActionGoal = GraspActionGoal()
-    graspActionGoal.goal.width = 0.05
-    graspActionGoal.goal.epsilon.inner = 0.005
-    graspActionGoal.goal.epsilon.outer = 0.005
+    graspActionGoal.goal.width = 0.01
+    graspActionGoal.goal.epsilon.inner = 0.1
+    graspActionGoal.goal.epsilon.outer = 0.1
     graspActionGoal.goal.speed = 0.1
-    graspActionGoal.goal.force = 200.
+    graspActionGoal.goal.force = 5.
     closeGripper = CloseGripper(robot, graspActionGoal)
     ig = 0; g = factory.grippers[ig]
     for ih, h in enumerate(factory.handles):
