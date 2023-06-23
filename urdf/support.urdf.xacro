@@ -105,6 +105,25 @@
           </geometry>
         </collision>
       </link>
+      <link name="pedestal">
+        <inertial>
+          <mass value="1."/>
+          <origin xyz="1.05 0.45 0.4625"/>
+          <inertia ixx=".01" iyy=".01" izz=".1" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0.4625"/>
+          <geometry>
+            <box size="0.25 0.25 0.925"/>
+          </geometry>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0.4625"/>
+          <geometry>
+            <box size="0.25 0.25 0.925"/>
+          </geometry>
+        </collision>
+      </link>
       <!-- Wrap panda1 robot into a box shaped obstacle -->
       <link name="panda1_box">
         <inertial>
@@ -155,6 +174,11 @@
         <origin xyz="1.40 0.96 0" />
         <parent link="world"/>
         <child link="wall_link_3"/>
+      </joint>
+      <joint name="pedestal_joint" type="fixed">
+        <origin xyz="1.05 0.45 0"/>
+        <parent link="world"/>
+        <child link="pedestal"/>
       </joint>
       <joint name="panda1_box_joint" type="fixed">
         <origin xyz="-0.6315 0 1.17" />
