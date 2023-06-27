@@ -33,7 +33,7 @@ from hpp.gepetto.manipulation import ViewerFactory
 from agimus_demos.tools_hpp import RosInterface
 from agimus_demos.calibration import HandEyeCalibration as Calibration
 from hpp.corbaserver import wrap_delete
-from create_graph import Factory
+from hpp.corbaserver.manipulation import ConstraintGraphFactory as Factory
 from t_less import TLess
 from bin_picking import BinPicking
 
@@ -82,12 +82,14 @@ robot.client.manipulation.robot.insertRobotSRDFModel\
     ("pandas", "package://agimus_demos/franka/manipulation/srdf/demo.srdf")
 
 graph = ConstraintGraph(robot, 'graph')
-factory = Factory(ps, graph, "part")
+factory = Factory(graph)
 # Add a state in the constraint graph
 factory.objects = ["part"]
 factory.grippers = list()
 factory.handlesPerObjects = [[]]
+factory.contactsPerObjects = [[]]
 factory.handles = list()
+factory.generate()
 c = Calibration(ps, graph, factory)
 c.robot_name = "pandas"
 c.camera_frame = "camera_color_optical_frame"

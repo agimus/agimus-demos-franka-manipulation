@@ -25,7 +25,17 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from agimus_demos.play_path import CalibrationControl
+from agimus_demos.calibration.play_path import CalibrationControl, playAllPaths
+
+def playAllPaths (startIndex):
+    i = startIndex
+    nbPaths = cc.hppClient.problem.numberPaths ()
+    while i < nbPaths:
+        cc.playPath (i)
+        if not cc.errorOccured:
+            print("Ran {}".format(i))
+            i+=1
+        #rospy.sleep (1)
 
 if __name__ == '__main__':
     cc = CalibrationControl ()
@@ -33,5 +43,5 @@ if __name__ == '__main__':
     cc.joints = ['panda2_joint1', 'panda2_joint2', 'panda2_joint3',
         'panda2_joint4', 'panda2_joint5', 'panda2_joint6',
         'panda2_joint7', 'panda2_finger_joint1', 'panda2_finger_joint2', ]
-    nbPaths = cc.hppClient.problem.numberPaths ()
+
     #playAllPaths (0)
