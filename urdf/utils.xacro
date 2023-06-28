@@ -52,6 +52,18 @@
         <xacro:inertial_props name="${name}" />
       </xacro:if>
     </link>
+    <!-- sub-link defining coarse geometries of real robot's internal self-collision -->
+    <link name="${prefix}${name}_sc">
+      <xacro:unless value="${gazebo}">
+        <xacro:insert_block name="self_collision_geometries" />
+      </xacro:unless>
+    </link>
+    <!-- fixed joint between both sub-links -->
+    <joint name="${prefix}${name}_sc_joint" type="fixed">
+      <origin rpy="${rpy}" />
+      <parent link="${prefix}${name}" />
+      <child link="${prefix}${name}_sc" />
+    </joint>
   </xacro:macro>
 
   <!-- =========================================================== -->

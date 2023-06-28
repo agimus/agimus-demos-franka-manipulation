@@ -92,6 +92,15 @@ print("Part and box loaded")
 robot.client.manipulation.robot.insertRobotSRDFModel\
     ("pandas", "package://agimus_demos/franka/manipulation/srdf/demo.srdf")
 
+# Remove collisions between object and self collision geometries
+srdfString = '<robot name="demo">'
+for i in range(1,8):
+    srdfString += f'<disable_collisions link1="panda2_link{i}_sc" link2="part/base_link" reason="handled otherwise"/>'
+srdfString += '<disable_collisions link1="panda2_hand_sc" link2="part/base_link" reason="handled otherwise"/>'
+srdfString += '</robot>'
+robot.client.manipulation.robot.insertRobotSRDFModelFromString(
+    "pandas",  srdfString)
+
 # Discretize handles
 ps.client.manipulation.robot.addGripper("pandas/support_link", "goal/gripper1",
     [1.05, 0.4, 1.,0,-sqrt(2)/2,0,sqrt(2)/2], 0.0)
