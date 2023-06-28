@@ -63,7 +63,7 @@ class OpenGripper(object):
         # Send command
         self.signal.value = np.array([self.moveActionGoal.goal.width,
                                       self.moveActionGoal.goal.speed])
-        t = self.robot.device.state.time
+        t = self.robot.device.control.time
         self.ros_publish.signal("trigger").recompute(t)
         # wait for gripper feedback
         self.ros_subscribe.signal('sout').recompute(t)
@@ -107,7 +107,7 @@ class CloseGripper(object):
         self.graspActionGoal.goal.epsilon.outer,
         self.graspActionGoal.goal.speed,
         self.graspActionGoal.goal.force,])
-        t = self.robot.device.state.time
+        t = self.robot.device.control.time
         self.ros_publish.signal("trigger").recompute(t)
         # wait for gripper feedback
         self.ros_subscribe.signal('sout').recompute(t)
