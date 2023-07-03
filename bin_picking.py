@@ -354,13 +354,19 @@ class BinPicking(object):
         self._freeGrasps = dict()
         res = False
         for gripper in self.robotGrippers:
+            freeGrasps = list()
             self._freeGrasps[gripper] = list()
             for handle in self.handles:
-                col, msg = self.bpc.bin_picking.collisionTest(
+                col, msg, gripperAxis = self.bpc.bin_picking.collisionTest(
                     gripper, handle, q)
                 if not col:
-                    self._freeGrasps[gripper].append(handle)
+                    # Store pairs (handle, score)
+                    freeGrasps.append((handle, -gripperAxis[2]))
                     res = True
+            # Sort handles by increasing z coordinate of gripper axis
+            l = sorted(freeGrasps, key = lambda x:x[1], reverse = True)
+            if len(l) > 0:
+                self._freeGrasps[gripper] = list(zip(*l))[0]
         return res
 
     def selectGrasp(self, q):
