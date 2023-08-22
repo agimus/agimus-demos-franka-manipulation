@@ -74,7 +74,7 @@ factory = None
 # Create a handle and a gripper for the goal position of the object
 # Create specific graph with vertical preplace motions
 # The last handle is the center of the part.
-def makeGraph(ps, robot, grippers, objects, handles, rules):
+def makeGraph(ps, robot, grippers, objects, handles, rules, possibleGrasps):
     global factory
     graph = ConstraintGraph(robot, 'graph')
 
@@ -83,5 +83,6 @@ def makeGraph(ps, robot, grippers, objects, handles, rules):
     factory.setGrippers(grippers)
     factory.setObjects(objects, handles, [[], []])
     factory.setRules(rules)
+    factory.setPossibleGrasps(possibleGrasps)
     factory.generate()
     return factory, graph

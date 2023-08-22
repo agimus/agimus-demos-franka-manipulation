@@ -137,34 +137,12 @@ class BinPicking(object):
         Build rules for the constraint graph factory
         """
         rules = list()
-        # robot grippers should not grasp goal handles
-        for gripper in self.robotGrippers:
-            for handle in self.goalHandles:
-                rules += [ Rule(grippers=[gripper], handles = [handle],
-                                link=False),]
-        # Each goal gripper can only grasp one goal handle
-        if len(self.goalGrippers) != len(self.goalHandles):
-            raise RuntimeError(
-                f"number of goal grippers ({len(self.goalGrippers)})"
-                + " should be the same as " +
-                f"number of goal handles ({len(self.goalHandles)})"
-            )
         for ig, gripper in enumerate(self.goalGrippers):
             for ih, handle in enumerate(self.goalHandles):
                 if ig != ih:
                     rules  += [
                         Rule(grippers=[gripper], handles = [handle], link=False)
                         ]
-        # goal grippers should not grasp regular part handles
-        for gripper in self.goalGrippers:
-            for handle in self.initialHandles:
-                rules += [
-                    Rule(grippers=[gripper], handles=[handle], link=False)
-                    ]
-            for handle in self.handlesToDiscretize:
-                rules += [
-                    Rule(grippers=[gripper], handles=[handle + "*"], link=False)
-                    ]
         # object cannot be placed in two goal positions at the same time
         rules += [
             Rule(grippers=self.robotGrippers + self.goalGrippers,
@@ -173,6 +151,21 @@ class BinPicking(object):
             Rule(grippers=[".*"], handles=[".*"], link=True)
         ]
         return rules
+
+    def _possibleGrasps(self):
+        res = dict()
+        # Each goal gripper can only grasp one goal handle
+        if len(self.goalGrippers) != len(self.goalHandles):
+            raise RuntimeError(
+                f"number of goal grippers ({len(self.goalGrippers)})"
+                + " should be the same as " +
+                f"number of goal handles ({len(self.goalHandles)})"
+            )
+        for g,h in zip(self.goalGrippers, self.goalHandles):
+            res[g] = [h]
+        for g in self.robotGrippers:
+            res[g] = self.handles
+        return res
 
     def writeRules(self, f):
         """
@@ -218,7 +211,7 @@ class BinPicking(object):
         handles.sort()
         self.factory, self.graph = makeGraph(
             self.ps, self.robot, self.robotGrippers + self.goalGrippers,
-            self.objects, [handles, []], self._rules())
+            self.objects, [handles, []], self._rules(), self._possibleGrasps())
         self.graph.addConstraints(graph=True,
             constraints = Constraints(numConstraints = self.graphConstraints))
         self.graph.initialize()
