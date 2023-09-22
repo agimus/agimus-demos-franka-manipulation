@@ -26,9 +26,10 @@
 
 from hpp.corbaserver import Client, loadServerPlugin, shrinkJointRange, \
     wrap_delete
+from hpp.corbaserver.bin_picking import Client as BpClient
 from hpp.corbaserver.manipulation import Client as ManipClient, ProblemSolver
 from hpp.corbaserver.manipulation import Constraints, Robot, Rule
-from hpp.corbaserver.bin_picking import Client as BpClient
+from hpp.corbaserver.problem_solver import _convertToCorbaAny as convertToAny
 from agimus_demos import InStatePlanner
 from create_graph import makeGraph
 from agimus_demos.tools_hpp import concatenatePaths
@@ -215,19 +216,17 @@ class BinPicking(object):
         self.graph.addConstraints(graph=True,
             constraints = Constraints(numConstraints = self.graphConstraints))
         self.graph.initialize()
-        # Make sure previous instance is destroyed if any before creating
-        # a new instance. This will avoid troubles with undesired CORBA server
-        # destruction.
-        self.inStatePlanner = None
-        self.inStatePlanner = InStatePlanner(self.ps, self.graph)
-        self.inStatePlanner.timeOutPathPlanning = 3.
-        self.inStatePlanner.optimizerTypes = ["EnforceTransitionSemantic",
-                                              "SimpleTimeParameterization"]
-        self.inStatePlanner.parameters['SimpleTimeParameterization/order'] = 2
-        self.inStatePlanner.parameters\
-            ['SimpleTimeParameterization/maxAcceleration'] = 2.
-        self.inStatePlanner.parameters\
-            ['SimpleTimeParameterization/safety'] = .95
+        self.transitionPlanner = self.wd(self.ps.client.manipulation.problem.\
+                                      createTransitionPlanner())
+        self.transitionPlanner.timeOut(3.)
+        self.transitionPlanner.addPathOptimizer("EnforceTransitionSemantic")
+        self.transitionPlanner.addPathOptimizer("SimpleTimeParameterization")
+        self.transitionPlanner.setParameter('SimpleTimeParameterization/order',
+                                         convertToAny(2))
+        self.transitionPlanner.setParameter(
+            'SimpleTimeParameterization/maxAcceleration', convertToAny(2.))
+        self.transitionPlanner.setParameter(
+            'SimpleTimeParameterization/safety', convertToAny(.95))
     def buildEffectors(self, obstacles, q):
         """
         build and effector to test collision of grasps
@@ -413,27 +412,27 @@ class BinPicking(object):
             return False, msg
         # Plan paths between waypoint configurations
         edge = "Loop | f"
-        self.inStatePlanner.setEdge(edge)
+        self.transitionPlanner.setEdge(self.graph.edges[edge])
         try:
-            p1 = self.inStatePlanner.computePath(q, [q1,], resetRoadmap = True)
+            p1 = self.transitionPlanner.planPath(q, [q1,], True)
         except Exception as exc:
             raise RuntimeError(f"Failed to connect {q} and {q1}: {exc}")
         edge = f"{gripper} > {handle} | f_12"
-        self.inStatePlanner.setEdge(edge)
-        res, p2, msg = self.inStatePlanner.directPath(q1, q2, False)
+        self.transitionPlanner.setEdge(self.graph.edges[edge])
+        p2, res, msg = self.transitionPlanner.directPath(q1, q2, False)
         assert(res)
-        p2 = self.inStatePlanner.timeParameterization(p2.asVector())
+        p2 = self.transitionPlanner.timeParameterization(p2.asVector())
         edge = f"{gripper} > {handle} | f_23"
-        self.inStatePlanner.setEdge(edge)
-        res, p3, msg = self.inStatePlanner.directPath(q2, q3, False)
+        self.transitionPlanner.setEdge(self.graph.edges[edge])
+        p3, res, msg = self.transitionPlanner.directPath(q2, q3, False)
         assert(res)
-        p3 = self.inStatePlanner.timeParameterization(p3.asVector())
+        p3 = self.transitionPlanner.timeParameterization(p3.asVector())
         ig = self.factory.grippers.index(gripper)
         ih = self.factory.handles.index(handle)
         edge = f"Loop | {ig}-{ih}"
-        self.inStatePlanner.setEdge(edge)
+        self.transitionPlanner.setEdge(self.graph.edges[edge])
         try:
-            p4 = self.inStatePlanner.computePath(q3, [q4,], resetRoadmap = True)
+            p4 = self.transitionPlanner.planPath(q3, [q4,], True)
         except Exception as exc:
             raise RuntimeError(f"Failed to connect {q3} and {q4}: {exc}")
         igg = self.goalGrasps[gripper][handle]
@@ -441,25 +440,25 @@ class BinPicking(object):
         goalGripper = self.goalGrippers[igg]
         goalHandle = self.goalHandles[igg]
         edge = f"{goalGripper} > {goalHandle} | {ig}-{ih}_12"
-        self.inStatePlanner.setEdge(edge)
-        res, p5, msg = self.inStatePlanner.directPath(q4, q5, False)
+        self.transitionPlanner.setEdge(self.graph.edges[edge])
+        p5, res, msg = self.transitionPlanner.directPath(q4, q5, False)
         assert(res)
-        p5 = self.inStatePlanner.timeParameterization(p5.asVector())
+        p5 = self.transitionPlanner.timeParameterization(p5.asVector())
         ggIndex = self.factory.grippers.index(goalGripper)
         ghIndex = self.factory.handles.index(goalHandle)
         edge = f"{gripper} < {handle} | {ig}-{ih}:{ggIndex}-{ghIndex}_21"
-        self.inStatePlanner.setEdge(edge)
-        res, p6, msg = self.inStatePlanner.directPath(q5, q6, False)
+        self.transitionPlanner.setEdge(self.graph.edges[edge])
+        p6, res, msg = self.transitionPlanner.directPath(q5, q6, False)
         assert(res)
-        p6 = self.inStatePlanner.timeParameterization(p6.asVector())
+        p6 = self.transitionPlanner.timeParameterization(p6.asVector())
         edge = "Loop | f"
-        self.inStatePlanner.setEdge(edge)
+        self.transitionPlanner.setEdge(self.graph.edges[edge])
         # Return to initial configuration
         q7 = q[:]
         r = self.robot.rankInConfiguration[f"{self.objects[0]}/root_joint"]
         q7[r:r+7] = q6[r:r+7]
         try:
-            p7 = self.inStatePlanner.computePath(q6, [q7,], resetRoadmap = True)
+            p7 = self.transitionPlanner.planPath(q6, [q7,], True)
         except Exception as exc:
             raise RuntimeError(f"Failed to connect {q6} and {q7}: {exc}")
         return True, concatenatePaths([p1,p2,p3,p4,p5,p6,p7])
