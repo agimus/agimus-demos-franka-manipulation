@@ -40,8 +40,15 @@ def playAllPaths (startIndex):
 if __name__ == '__main__':
     cc = CalibrationControl ()
     cc.endEffectorFrame = "panda2_ref_camera_link"
+    cc.mountFrame = "panda2_hand"
+    cc.cameraFrame = "camera_color_optical_frame"
+    cc.squareSize = 0.0254
     cc.joints = ['panda2_joint1', 'panda2_joint2', 'panda2_joint3',
         'panda2_joint4', 'panda2_joint5', 'panda2_joint6',
         'panda2_joint7', 'panda2_finger_joint1', 'panda2_finger_joint2', ]
 
-    #playAllPaths (0)
+    playAllPaths(0)
+    cc.save()
+    cc.computeHandEyeCalibration()
+    eMc = cc.computeCameraPose()
+    cc.writeCameraParameters(eMc)

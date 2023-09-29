@@ -34,6 +34,8 @@ from agimus_demos.tools_hpp import RosInterface
 from agimus_demos.calibration import HandEyeCalibration as Calibration
 from hpp.corbaserver import wrap_delete
 from hpp.corbaserver.manipulation import ConstraintGraphFactory as Factory
+from pinocchio import XYZQUATToSE3, SE3ToXYZQUAT
+import tf2_ros
 from t_less import TLess
 from bin_picking import BinPicking
 
@@ -119,39 +121,3 @@ q_init = ri.getCurrentConfig(q0)
 res, q_init, err = graph.applyNodeConstraints('free', q_init)
 assert res
 c.generateConfigurationsAndPaths(q_init, 30)
-
-def computeCameraPose(mMe, eMc, eMc_measured):
-    # We denote
-    #  - m panda2_hand,
-    #  - c camera_color_optical_frame,
-    #  - e ref_camera_link (end effector).
-    # we wish to compute a new position mMe_new of ref_camera_link in
-    # panda2_hand in such a way that
-    #  - eMc remains the same (we assume the camera is well calibrated),
-    #  - mMc = mMe_new * eMc = mMe * eMc_measured
-    # Thus
-    #  mMe_new = mMe*eMc_measured*eMc.inverse()
-    return mMe*eMc_measured*eMc.inverse()
-
-import numpy as np
-import pinocchio.rpy
-import eigenpy
-
-# # Current position of ref_camera_link in panda2_hand
-mMe = pinocchio.SE3(translation=np.array([0.02, 0.0, 0.045]),
-                    rotation = pinocchio.rpy.rpyToMatrix(np.array(
-                        [3.14159265, -1.57079633, 0])))
-
-# Current position of camera_color_optical_frame in ref_camera_link
-eMc = pinocchio.SE3(translation=np.array([0.011, 0.033, 0.013]),
-                    quat = eigenpy.Quaternion(np.array(
-                        [-0.500, 0.500, -0.500, 0.500])))
-
-# # Measured position of camera_optical_frame in ref_camera_link from calibration
-eMc_measured = pinocchio.SE3(translation=np.array(
-    [0.00858799, 0.0325061, 0.0221539]),
-                             rotation = pinocchio.exp3(np.array([-1.32023, 1.24617, -1.19176])))
-#new position mMe_new of ref_camera_link in panda2_hand
-mMe_new = computeCameraPose(mMe, eMc, eMc_measured)
-xyz = mMe_new.translation
-rpy = pinocchio.rpy.matrixToRpy(mMe_new.rotation)
