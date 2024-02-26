@@ -70,7 +70,7 @@ tmp.mkdir(exist_ok=True)
 #############################
 
 
-object_ds = BOPObjectDataset(LOCAL_DATA_DIR / 'bop_datasets/ycbv/models')
+object_ds = BOPObjectDataset(LOCAL_DATA_DIR / 'bop_datasets/tless/models_cad') #'bop_datasets/ycbv/models'
 mesh_db = MeshDataBase.from_object_ds(object_ds)
 mv_predictor = MultiviewScenePredictor(mesh_db)
 
