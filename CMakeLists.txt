@@ -24,14 +24,6 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-INSTALL_DEMO_LAUNCH_FILES(franka manipulation
-  LAUNCHFILES
-  demo.launch
-  robot.launch
-  rosparam.launch
-  simulation.launch
-  )
-
 INSTALL(FILES
   urdf/big_box.urdf
   urdf/demo.urdf.xacro
@@ -41,38 +33,38 @@ INSTALL(FILES
   urdf/support.urdf.xacro
   urdf/utils.xacro
   DESTINATION
-  ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/urdf
+  ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/franka/manipulation/urdf
   )
 
 INSTALL(FILES
   urdf/t-less/obj_01.urdf
   DESTINATION
-  ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/urdf/t-less
+  ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/franka/manipulation/urdf/t-less
   )
 
 INSTALL(FILES
   srdf/big_box.srdf
   srdf/demo.srdf
   DESTINATION
-  ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/srdf
+  ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/franka/manipulation/srdf
   )
 
 INSTALL(FILES
   srdf/t-less/obj_01.srdf
   DESTINATION
-  ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/srdf/t-less
+  ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/franka/manipulation/srdf/t-less
   )
 
 INSTALL(FILES
   srdf/t-less/obj_01.srdf
   DESTINATION
-  ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/srdf/t-less
+  ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/franka/manipulation/srdf/t-less
   )
 
 INSTALL(FILES
   config/calibrated-params.yaml
   DESTINATION
-  ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/config
+  ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/franka/manipulation/config
   )
 
 INSTALL(FILES
@@ -80,23 +72,23 @@ INSTALL(FILES
   demo.yaml
   demo-calibration.yaml
   DESTINATION
-  ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation
+  ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/franka/manipulation
   )
 
 INSTALL(FILES
   meshes/camera-support.stl
   DESTINATION
-  ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/meshes
+  ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/franka/manipulation/meshes
   )
 
 INSTALL(DIRECTORY
   meshes/t-less DESTINATION
-  ${CATKIN_PACKAGE_SHARE_DESTINATION}/franka/manipulation/meshes
+  ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/franka/manipulation/meshes
   )
 
 INSTALL(PROGRAMS
   scripts/gripper_control.py
   DESTINATION
-  ${CATKIN_PACKAGE_SHARE_DESTINATION}/scripts
+  ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/scripts
   RENAME franka_manipulation_gripper_control.py
   )
