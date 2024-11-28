@@ -36,12 +36,11 @@ from tools_hpp import displayGripper, displayHandle, generateTargetConfig, \
 from bin_picking import BinPicking
 from logging import getLogger
 
-import rospy, tf2_ros
+import rclpy, tf2_ros
 import sys
 import os
 import numpy as np
 import cv2
-import torch
 import time
 import ast
 import bridge_transform as btf
@@ -62,8 +61,6 @@ from hpp.corbaserver.manipulation import ConstraintGraphFactory as Factory
 
 logger = getLogger(__name__)
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 os.environ["EGL_VISIBLE_DEVICES"] = "-1"
 
@@ -73,7 +70,7 @@ print("To avoid crash during constrain graph building, RESTART the hppcorbaserve
 connectedToRos = True
 
 try:
-    Robot.urdfString = rospy.get_param('robot_description')
+    Robot.urdfString = rclpy.get_param('robot_description')
     print("reading URDF from ROS param")
     connectedToRos = True
 except:

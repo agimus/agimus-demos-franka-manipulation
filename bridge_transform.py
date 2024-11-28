@@ -1,7 +1,7 @@
 import sys
 import time
 import numpy as np
-import tf2_ros, rospy
+import tf2_ros, rclpy
 import tf2_geometry_msgs
 
 from std_msgs.msg import String
@@ -50,7 +50,7 @@ class Object_Pose:
 def callback(msg):
     global message
     message = msg
-    rospy.sleep(1)
+    rclpy.sleep(1)
 
 def listen_to_happypose_detections():
     topic_name = "/happypose/detections"
@@ -70,8 +70,8 @@ def listen_to_happypose_detections():
             break_var = True
             print("[INFO] Topic subscribed and objects found.")
         else :
-            data = rospy.Subscriber(topic_name, Detection2DArray, callback)
-            rospy.sleep(1)
+            data = rclpy.Subscriber(topic_name, Detection2DArray, callback)
+            rclpy.sleep(1)
             time_elapsed = time.time()-time_start
             sys.stdout.write("Current time : %d \r" % (time_elapsed))
             sys.stdout.flush()
@@ -137,7 +137,7 @@ def get_transform(obj_id=0):
     global listener
 
     # Get the poses of the object in the world frame through tf_transform
-    transform = tfBuffer.lookup_transform('world','camera_color_optical_frame', rospy.Time())
+    transform = tfBuffer.lookup_transform('world','camera_color_optical_frame', rclpy.Time())
     pose_transformed = tf2_geometry_msgs.do_transform_pose(object_message_list[obj_id].results[0].pose, transform)
 
     return pose_transformed.pose
@@ -184,7 +184,7 @@ def run_pipeline():
 
     # Initialize Ros node
     try:
-        rospy.init_node("subscribe_to_miya_ros", anonymous=True)
+        rclpy.init_node("subscribe_to_miya_ros", anonymous=True)
         print("[INFO] Node Initialiazed ...")
     except:
         print("[INFO] Node already initialized ...")
@@ -210,7 +210,7 @@ if __name__ == "__main__":
     object_message_list = []
 
     # Initialize Ros node
-    rospy.init_node("subscribe_to_miya_ros", anonymous=True)
+    rclpy.init_node("subscribe_to_miya_ros", anonymous=True)
 
     # Buffer and Subscriber
     tfBuffer = tf2_ros.Buffer()
