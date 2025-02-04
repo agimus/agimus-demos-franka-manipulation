@@ -26,10 +26,16 @@ demo:
       handles: ['part/center2']
       link: False
     - grippers: ['goal/gripper1']
+      handles: ['part/center1']
+      link: False
+    - grippers: ['goal/gripper1']
       handles: ['part/center2']
       link: False
     - grippers: ['goal/gripper2']
       handles: ['part/center1']
+      link: False
+    - grippers: ['goal/gripper2']
+      handles: ['part/center2']
       link: False
     - grippers: ['goal/gripper1']
       handles: ['part/lateral_top_000']

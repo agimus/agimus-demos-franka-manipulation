@@ -182,6 +182,16 @@ def makeSupervisorWithFactory(robot):
         "position": [1.05, 0.5, 1.,0,-sqrt(2)/2,0,sqrt(2)/2],
         "name": "goal/gripper2", "robot": "pandas"
     }
+    srdfDict["pandas"]["grippers"]["goal/gripper3"] = {
+        "clearance": 0.0, "link": "support_link",
+        "position": [1.05, 0.0, 1.02,0,0,0,0],
+        "name": "goal/gripper3", "robot": "pandas"
+    }
+    srdfDict["pandas"]["grippers"]["goal/gripper4"] = {
+        "clearance": 0.0, "link": "support_link",
+        "position": [1.05, 0.0, 1.02,0,1,0,0],
+        "name": "goal/gripper4", "robot": "pandas"
+    }
     if "part" in srdfDict:
         # Add goal handles
         srdfDict["part"]["handles"]["part/center1"] = {
@@ -196,12 +206,26 @@ def makeSupervisorWithFactory(robot):
             [0,0,0,0,-sqrt(2)/2,0,sqrt(2)/2],
             "mask": 3*[True] + [False, True, True]
         }
+        srdfDict["part"]["handles"]["part/center3"] = {
+            "robot": "part", "name": "part/center3", "clearance": 0.03,
+            "link": "part/base_link", "position":
+            [0,0,0,0,0,0,0,1],
+            "mask": 3*[True] + [False, True, True]
+        }
+        srdfDict["part"]["handles"]["part/center4"] = {
+            "robot": "part", "name": "part/center4", "clearance": 0.03,
+            "link": "part/base_link", "position":
+            [0,0,0,0,0,1,0,0],
+            "mask": 3*[True] + [False, True, True]
+        }
 
     grippers = list()
     if "grippers" in globalDemoDict:
         grippers = list(globalDemoDict["grippers"])
         grippers.append("goal/gripper1")
         grippers.append("goal/gripper2")
+        grippers.append("goal/gripper3")
+        grippers.append("goal/gripper4")
 
     handlesPerObjects = list()
     contactPerObjects = list()
